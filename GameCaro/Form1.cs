@@ -12,7 +12,7 @@ namespace GameCaro
         {
             InitializeComponent();
 
-            ChessBoard = new CaroManager(pnlBanCo);
+            ChessBoard = new CaroManager(pnlBanCo, tbName, ptbIcon);
 
             ChessBoard.BanCo();
         }

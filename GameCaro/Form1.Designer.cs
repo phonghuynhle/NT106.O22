@@ -90,7 +90,6 @@
             // 
             ptHinhAnh.BackgroundImage = (Image)resources.GetObject("ptHinhAnh.BackgroundImage");
             ptHinhAnh.BackgroundImageLayout = ImageLayout.Stretch;
-            ptHinhAnh.BorderStyle = BorderStyle.FixedSingle;
             ptHinhAnh.Location = new Point(-1, -2);
             ptHinhAnh.Margin = new Padding(2, 2, 2, 2);
             ptHinhAnh.Name = "ptHinhAnh";
