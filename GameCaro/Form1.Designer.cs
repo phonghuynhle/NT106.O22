@@ -68,10 +68,9 @@
             // 
             pnlBanCo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pnlBanCo.BorderStyle = BorderStyle.FixedSingle;
-            pnlBanCo.Location = new Point(370, 60);
-            pnlBanCo.Margin = new Padding(2, 2, 2, 2);
+            pnlBanCo.Location = new Point(463, 75);
             pnlBanCo.Name = "pnlBanCo";
-            pnlBanCo.Size = new Size(510, 712);
+            pnlBanCo.Size = new Size(637, 889);
             pnlBanCo.TabIndex = 4;
             // 
             // pnlHinhAnh
@@ -80,20 +79,16 @@
             pnlHinhAnh.BackgroundImageLayout = ImageLayout.Stretch;
             pnlHinhAnh.BorderStyle = BorderStyle.Fixed3D;
             pnlHinhAnh.Controls.Add(ptHinhAnh);
-            pnlHinhAnh.Location = new Point(10, 60);
-            pnlHinhAnh.Margin = new Padding(2, 2, 2, 2);
+            pnlHinhAnh.Location = new Point(12, 75);
             pnlHinhAnh.Name = "pnlHinhAnh";
-            pnlHinhAnh.Size = new Size(341, 172);
+            pnlHinhAnh.Size = new Size(425, 214);
             pnlHinhAnh.TabIndex = 1;
             // 
             // ptHinhAnh
             // 
-            ptHinhAnh.BackgroundImage = (Image)resources.GetObject("ptHinhAnh.BackgroundImage");
-            ptHinhAnh.BackgroundImageLayout = ImageLayout.Stretch;
             ptHinhAnh.Location = new Point(-1, -2);
-            ptHinhAnh.Margin = new Padding(2, 2, 2, 2);
             ptHinhAnh.Name = "ptHinhAnh";
-            ptHinhAnh.Size = new Size(339, 172);
+            ptHinhAnh.Size = new Size(424, 215);
             ptHinhAnh.SizeMode = PictureBoxSizeMode.StretchImage;
             ptHinhAnh.TabIndex = 0;
             ptHinhAnh.TabStop = false;
@@ -113,135 +108,121 @@
             pnInfo.Controls.Add(ptbIcon);
             pnInfo.Controls.Add(pgbTime);
             pnInfo.Controls.Add(tbName);
-            pnInfo.Location = new Point(10, 251);
-            pnInfo.Margin = new Padding(2, 2, 2, 2);
+            pnInfo.Location = new Point(12, 314);
             pnInfo.Name = "pnInfo";
-            pnInfo.Size = new Size(341, 521);
+            pnInfo.Size = new Size(425, 650);
             pnInfo.TabIndex = 2;
             // 
             // btChat
             // 
-            btChat.Location = new Point(259, 479);
-            btChat.Margin = new Padding(2, 2, 2, 2);
+            btChat.Location = new Point(324, 599);
             btChat.Name = "btChat";
-            btChat.Size = new Size(75, 35);
+            btChat.Size = new Size(94, 44);
             btChat.TabIndex = 9;
             btChat.Text = "Send";
             btChat.UseVisualStyleBackColor = true;
             // 
             // tbMessage
             // 
-            tbMessage.Location = new Point(2, 478);
-            tbMessage.Margin = new Padding(2, 2, 2, 2);
+            tbMessage.Location = new Point(3, 597);
             tbMessage.Multiline = true;
             tbMessage.Name = "tbMessage";
-            tbMessage.Size = new Size(253, 38);
+            tbMessage.Size = new Size(315, 46);
             tbMessage.TabIndex = 8;
             // 
             // tbChat
             // 
             tbChat.BackColor = SystemColors.Control;
-            tbChat.Location = new Point(2, 211);
-            tbChat.Margin = new Padding(2, 2, 2, 2);
+            tbChat.Location = new Point(3, 264);
             tbChat.Multiline = true;
             tbChat.Name = "tbChat";
             tbChat.ScrollBars = ScrollBars.Vertical;
-            tbChat.Size = new Size(333, 250);
+            tbChat.Size = new Size(415, 312);
             tbChat.TabIndex = 7;
             // 
             // btPlayAI
             // 
-            btPlayAI.Location = new Point(227, 181);
-            btPlayAI.Margin = new Padding(2, 2, 2, 2);
+            btPlayAI.Location = new Point(284, 226);
             btPlayAI.Name = "btPlayAI";
-            btPlayAI.Size = new Size(107, 26);
+            btPlayAI.Size = new Size(134, 32);
             btPlayAI.TabIndex = 6;
             btPlayAI.Text = "1 Player";
             btPlayAI.UseVisualStyleBackColor = true;
             // 
             // button4
             // 
-            button4.Location = new Point(106, 181);
-            button4.Margin = new Padding(2, 2, 2, 2);
+            button4.Location = new Point(133, 226);
             button4.Name = "button4";
-            button4.Size = new Size(109, 26);
+            button4.Size = new Size(136, 32);
             button4.TabIndex = 7;
             button4.Text = "2 Player/ Com";
             button4.UseVisualStyleBackColor = true;
             // 
             // btLAN
             // 
-            btLAN.Location = new Point(3, 180);
-            btLAN.Margin = new Padding(2, 2, 2, 2);
+            btLAN.Location = new Point(4, 225);
             btLAN.Name = "btLAN";
-            btLAN.Size = new Size(90, 26);
+            btLAN.Size = new Size(112, 33);
             btLAN.TabIndex = 4;
             btLAN.Text = "LAN";
             btLAN.UseVisualStyleBackColor = true;
             // 
             // btRedo
             // 
-            btRedo.Location = new Point(126, 106);
-            btRedo.Margin = new Padding(2, 2, 2, 2);
+            btRedo.Location = new Point(157, 133);
             btRedo.Name = "btRedo";
-            btRedo.Size = new Size(70, 50);
+            btRedo.Size = new Size(88, 62);
             btRedo.TabIndex = 4;
             btRedo.Text = "Redo";
             btRedo.UseVisualStyleBackColor = true;
             // 
             // btUndo
             // 
-            btUndo.Location = new Point(39, 106);
-            btUndo.Margin = new Padding(2, 2, 2, 2);
+            btUndo.Location = new Point(49, 133);
             btUndo.Name = "btUndo";
-            btUndo.Size = new Size(70, 50);
+            btUndo.Size = new Size(88, 62);
             btUndo.TabIndex = 3;
             btUndo.Text = "Undo";
             btUndo.UseVisualStyleBackColor = true;
             // 
             // ptbIcon
             // 
-            ptbIcon.Location = new Point(227, 20);
-            ptbIcon.Margin = new Padding(2, 2, 2, 2);
+            ptbIcon.Location = new Point(284, 25);
             ptbIcon.Name = "ptbIcon";
-            ptbIcon.Size = new Size(107, 96);
+            ptbIcon.Size = new Size(134, 120);
             ptbIcon.SizeMode = PictureBoxSizeMode.StretchImage;
             ptbIcon.TabIndex = 2;
             ptbIcon.TabStop = false;
             // 
             // pgbTime
             // 
-            pgbTime.Location = new Point(18, 62);
-            pgbTime.Margin = new Padding(2, 2, 2, 2);
+            pgbTime.Location = new Point(22, 77);
             pgbTime.Name = "pgbTime";
-            pgbTime.Size = new Size(198, 27);
+            pgbTime.Size = new Size(247, 34);
             pgbTime.TabIndex = 1;
             // 
             // tbName
             // 
-            tbName.Location = new Point(18, 20);
-            tbName.Margin = new Padding(2, 2, 2, 2);
+            tbName.Location = new Point(22, 25);
             tbName.Name = "tbName";
-            tbName.Size = new Size(198, 27);
+            tbName.Size = new Size(247, 31);
             tbName.TabIndex = 0;
             // 
             // tbIP
             // 
-            tbIP.Location = new Point(50, 29);
-            tbIP.Margin = new Padding(2, 2, 2, 2);
+            tbIP.Location = new Point(63, 36);
             tbIP.Multiline = true;
             tbIP.Name = "tbIP";
-            tbIP.Size = new Size(296, 27);
+            tbIP.Size = new Size(369, 33);
             tbIP.TabIndex = 3;
             // 
             // label1
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Times New Roman", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(14, 34);
-            label1.Margin = new Padding(2, 0, 2, 0);
+            label1.Location = new Point(18, 43);
             label1.Name = "label1";
-            label1.Size = new Size(22, 17);
+            label1.Size = new Size(26, 20);
             label1.TabIndex = 12;
             label1.Text = "IP";
             // 
@@ -251,8 +232,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { menuToolStripMenuItem, optionToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Padding = new Padding(5, 2, 0, 2);
-            menuStrip1.Size = new Size(890, 28);
+            menuStrip1.Size = new Size(1112, 33);
             menuStrip1.TabIndex = 13;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -260,70 +240,70 @@
             // 
             menuToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, undoToolStripMenuItem, redoToolStripMenuItem, quitGameToolStripMenuItem });
             menuToolStripMenuItem.Name = "menuToolStripMenuItem";
-            menuToolStripMenuItem.Size = new Size(60, 24);
+            menuToolStripMenuItem.Size = new Size(73, 29);
             menuToolStripMenuItem.Text = "Menu";
             // 
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(165, 26);
+            newToolStripMenuItem.Size = new Size(200, 34);
             newToolStripMenuItem.Text = "New Game";
             // 
             // undoToolStripMenuItem
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            undoToolStripMenuItem.Size = new Size(165, 26);
+            undoToolStripMenuItem.Size = new Size(200, 34);
             undoToolStripMenuItem.Text = "Undo";
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            redoToolStripMenuItem.Size = new Size(165, 26);
+            redoToolStripMenuItem.Size = new Size(200, 34);
             redoToolStripMenuItem.Text = "Redo";
             // 
             // quitGameToolStripMenuItem
             // 
             quitGameToolStripMenuItem.Name = "quitGameToolStripMenuItem";
-            quitGameToolStripMenuItem.Size = new Size(165, 26);
+            quitGameToolStripMenuItem.Size = new Size(200, 34);
             quitGameToolStripMenuItem.Text = "Quit Game";
             // 
             // optionToolStripMenuItem
             // 
             optionToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { playerToolStripMenuItem, playerToolStripMenuItem1 });
             optionToolStripMenuItem.Name = "optionToolStripMenuItem";
-            optionToolStripMenuItem.Size = new Size(69, 24);
+            optionToolStripMenuItem.Size = new Size(84, 29);
             optionToolStripMenuItem.Text = "Option";
             // 
             // playerToolStripMenuItem
             // 
             playerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { computerToolStripMenuItem, lANToolStripMenuItem });
             playerToolStripMenuItem.Name = "playerToolStripMenuItem";
-            playerToolStripMenuItem.Size = new Size(144, 26);
+            playerToolStripMenuItem.Size = new Size(176, 34);
             playerToolStripMenuItem.Text = "2 Player";
             // 
             // computerToolStripMenuItem
             // 
             computerToolStripMenuItem.Name = "computerToolStripMenuItem";
-            computerToolStripMenuItem.Size = new Size(170, 26);
+            computerToolStripMenuItem.Size = new Size(209, 34);
             computerToolStripMenuItem.Text = "1 Computer";
             // 
             // lANToolStripMenuItem
             // 
             lANToolStripMenuItem.Name = "lANToolStripMenuItem";
-            lANToolStripMenuItem.Size = new Size(170, 26);
+            lANToolStripMenuItem.Size = new Size(209, 34);
             lANToolStripMenuItem.Text = "LAN";
             // 
             // playerToolStripMenuItem1
             // 
             playerToolStripMenuItem1.Name = "playerToolStripMenuItem1";
-            playerToolStripMenuItem1.Size = new Size(144, 26);
+            playerToolStripMenuItem1.Size = new Size(176, 34);
             playerToolStripMenuItem1.Text = "1 Player";
             // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(890, 781);
+            ClientSize = new Size(1112, 976);
             Controls.Add(label1);
             Controls.Add(tbIP);
             Controls.Add(pnInfo);
@@ -332,7 +312,6 @@
             Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
-            Margin = new Padding(2, 2, 2, 2);
             Name = "Form1";
             Text = "Game Caro";
             pnlHinhAnh.ResumeLayout(false);
