@@ -40,6 +40,32 @@ namespace GameCaro
         private List<List<Button>> matrix;
         public List<List<Button>> Matrix { get => matrix; set => matrix = value; }
 
+        private event EventHandler playerMarked;
+        public event EventHandler PlayerMarked
+        {
+            add
+            {
+                playerMarked += value;
+            }
+            remove
+            {
+                playerMarked -= value;
+            }
+        }
+
+        private event EventHandler endedGame;
+        public event EventHandler EndedGame
+        {
+            add
+            {
+                endedGame += value;
+            }
+            remove
+            {
+                endedGame -= value;
+            }
+        }
+
 
 
         #endregion
@@ -68,7 +94,8 @@ namespace GameCaro
         #region Method
         public void BanCo()
         {
-            ChangePlayer();
+            ChessBoard.Enabled = true;
+
 
             Matrix = new List<List<Button>>();
 
@@ -138,10 +165,16 @@ namespace GameCaro
 
             ChangePlayer();
 
+            if (playerMarked != null)
+            {
+                playerMarked(this, new EventArgs());
+            }
+
             if (isEndGame(btn))
             {
                 EndGame();
             }
+
 
 
         }
@@ -164,8 +197,12 @@ namespace GameCaro
 
         public void EndGame()
         {
- 
-            MessageBox.Show("Kết thúc");
+
+            if (endedGame != null)
+            {
+                endedGame(this, new EventArgs());
+            }
+
         }
 
         #region Win_Close
@@ -305,7 +342,21 @@ namespace GameCaro
 
         #endregion
 
+
+
+        
         #endregion
+    }
+    public class ButtonClickEvent : EventArgs
+    {
+        private Point clickedPoint;
+
+        public Point ClickedPoint { get => clickedPoint; set => clickedPoint = value; }
+
+        public ButtonClickEvent(Point point)
+        {
+            this.ClickedPoint = point;
+        }
     }
 }
 

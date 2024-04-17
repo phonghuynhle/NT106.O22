@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             pnlBanCo = new Panel();
             pnlHinhAnh = new Panel();
@@ -57,6 +58,7 @@
             computerToolStripMenuItem = new ToolStripMenuItem();
             lANToolStripMenuItem = new ToolStripMenuItem();
             playerToolStripMenuItem1 = new ToolStripMenuItem();
+            tmTime = new System.Windows.Forms.Timer(components);
             pnlHinhAnh.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptHinhAnh).BeginInit();
             pnInfo.SuspendLayout();
@@ -299,6 +301,10 @@
             playerToolStripMenuItem1.Size = new Size(176, 34);
             playerToolStripMenuItem1.Text = "1 Player";
             // 
+            // tmTime
+            // 
+            tmTime.Tick += tmTime_Tick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -355,5 +361,6 @@
         private ToolStripMenuItem computerToolStripMenuItem;
         private ToolStripMenuItem lANToolStripMenuItem;
         private ToolStripMenuItem playerToolStripMenuItem1;
+        private System.Windows.Forms.Timer tmTime;
     }
 }
