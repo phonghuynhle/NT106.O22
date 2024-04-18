@@ -177,6 +177,7 @@
             btRedo.TabIndex = 4;
             btRedo.Text = "Redo";
             btRedo.UseVisualStyleBackColor = true;
+            btRedo.Click += btRedo_Click;
             // 
             // btUndo
             // 
@@ -186,6 +187,7 @@
             btUndo.TabIndex = 3;
             btUndo.Text = "Undo";
             btUndo.UseVisualStyleBackColor = true;
+            btUndo.Click += btUndo_Click;
             // 
             // ptbIcon
             // 
@@ -257,12 +259,14 @@
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             undoToolStripMenuItem.Size = new Size(270, 34);
             undoToolStripMenuItem.Text = "Undo";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             redoToolStripMenuItem.Size = new Size(270, 34);
             redoToolStripMenuItem.Text = "Redo";
+            redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
             // 
             // quitGameToolStripMenuItem
             // 

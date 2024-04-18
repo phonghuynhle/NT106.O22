@@ -65,7 +65,12 @@ namespace GameCaro
                 endedGame -= value;
             }
         }
+        private Stack<PlayInfo> playUndo;
 
+        public Stack<PlayInfo> PlayUndo { get => playUndo; set => playUndo = value; }
+
+        private Stack<PlayInfo> playRedo;
+        public Stack<PlayInfo> PlayRedo { get => playRedo; set => playRedo = value; }
 
 
         #endregion
@@ -96,6 +101,11 @@ namespace GameCaro
         {
             ChessBoard.Enabled = true;
             ChessBoard.Controls.Clear();
+
+            //bai7 
+            PlayUndo = new Stack<PlayInfo>();
+            PlayRedo = new Stack<PlayInfo>();
+            //
 
             CurrentPlayer = 0;
 
@@ -167,6 +177,13 @@ namespace GameCaro
 
             Mark(btn);
 
+            //thêm bước đi vào 
+            PlayUndo.Push(new PlayInfo(GetChessPoint(btn), CurrentPlayer, btn.BackgroundImage));
+            CurrentPlayer = CurrentPlayer == 1 ? 0 : 1;
+            PlayRedo.Clear();
+
+            //
+
             ChangePlayer();
 
             if (playerMarked != null)
@@ -186,9 +203,6 @@ namespace GameCaro
         private void Mark(Button btn)
         {
             btn.BackgroundImage = Player[CurrentPlayer].Mark;   
-
-            CurrentPlayer = CurrentPlayer == 1 ? 0 : 1;
-
 
         }
 
@@ -346,9 +360,85 @@ namespace GameCaro
 
         #endregion
 
+        #region Undo_Redo
+        public bool Undo()  
+        {
+            if (playUndo.Count <= 0)
+                return false;
 
 
-        
+            PlayInfo oldPoint = PlayUndo.Peek();
+            CurrentPlayer = oldPoint.CurrentPlayer == 1 ? 0 : 1;
+            bool isUndo1 = UndoAStep();
+            bool isUndo2 = UndoAStep();
+            return isUndo1 && isUndo2;
+        }
+
+        private bool UndoAStep()
+        {
+            if (playUndo.Count <= 0)
+                return false;
+
+            PlayInfo oldPoint = PlayUndo.Pop();
+            PlayRedo.Push(oldPoint);
+
+            Button btn = Matrix[oldPoint.Point.Y][oldPoint.Point.X];
+
+            btn.BackgroundImage = null;
+
+            if (playUndo.Count <= 0)
+            {
+
+                CurrentPlayer = 0;
+            }
+            else
+            {
+                oldPoint = PlayUndo.Peek();
+
+            }
+            ChangePlayer();
+            return true;
+        }
+        public bool Redo()
+        {
+            if (PlayRedo.Count <= 0)
+                return false;
+
+            PlayInfo OldPos = PlayRedo.Peek();
+            CurrentPlayer = OldPos.CurrentPlayer;
+
+
+            bool IsRedo1 = RedoAStep();
+            bool IsRedo2 = RedoAStep();
+
+            return IsRedo1 && IsRedo2;
+        }
+
+        private bool RedoAStep()
+        {
+            if (PlayRedo.Count <= 0)
+                return false;
+
+            PlayInfo OldPos = PlayRedo.Pop();
+            PlayUndo.Push(OldPos);
+
+            Button btn = Matrix[OldPos.Point.Y][OldPos.Point.X];
+            btn.BackgroundImage = OldPos.Mark;
+
+            if (PlayRedo.Count <= 0)
+                CurrentPlayer = OldPos.CurrentPlayer == 1 ? 0 : 1;
+            else
+                OldPos = PlayRedo.Peek();
+
+            ChangePlayer();
+
+            return true;
+        }
+        #endregion
+
+
+
+
         #endregion
     }
     public class ButtonClickEvent : EventArgs

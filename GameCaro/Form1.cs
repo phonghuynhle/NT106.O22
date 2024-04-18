@@ -1,4 +1,4 @@
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace GameCaro
@@ -40,11 +40,26 @@ namespace GameCaro
             tmTime.Stop();
             pnlBanCo.Enabled = false;
 
+            // đóng undo khi đã kết thúc game
+            undoToolStripMenuItem.Enabled = false;
+            redoToolStripMenuItem.Enabled = false;
+            //
+
+            btUndo.Enabled = false;
+            btRedo.Enabled = false;
+
         }
         void NewGame()
         {
             pgbTime.Value = 0;
             tmTime.Stop();
+            //mở undo khi new game
+            undoToolStripMenuItem.Enabled = true;
+            //
+            redoToolStripMenuItem.Enabled = true;
+
+            btUndo.Enabled = true;
+            btRedo.Enabled = true;
 
             ChessBoard.BanCo();
 
@@ -55,8 +70,10 @@ namespace GameCaro
         }
         void Undo()
         {
+            ChessBoard.Undo();
+            pgbTime.Value = 0;
         }
-        void Redo() { }
+        void Redo() { ChessBoard.Redo(); }
 
         #region Menu
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -65,15 +82,28 @@ namespace GameCaro
             pnlBanCo.Enabled = true;
         }
 
+
+
         private void quitGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Quit();
         }
 
-        //bai6 t?o s? ki?n khi form ?�ng
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            pgbTime.Value = 0;
+            ChessBoard.Undo();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChessBoard.Redo();
+        }
+
+        //Tạo sự kiện khi form đóng
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (MessageBox.Show("B?n c� ch?c mu?n tho�t", "Th�ng b�o", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
+            if (MessageBox.Show("Bạn có chắc muốn thoát", "Thông báo", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
                 e.Cancel = true;
             else
             {
@@ -83,6 +113,16 @@ namespace GameCaro
         }
         //
         #endregion
+
+        private void btUndo_Click(object sender, EventArgs e)
+        {
+            undoToolStripMenuItem_Click(sender, e);
+        }
+
+        private void btRedo_Click(object sender, EventArgs e)
+        {
+            redoToolStripMenuItem_Click(sender, e) ;
+        }
 
         private void ChessBoard_PlayerMarked(object sender, EventArgs e)
         {
@@ -98,7 +138,7 @@ namespace GameCaro
 
         private void tmTime_Tick(object sender, EventArgs e)
         {
-            //l�m cho pgb ch?y
+            //làm cho pgb chạy
             pgbTime.PerformStep();
 
             if (pgbTime.Value >= pgbTime.Maximum) { EndGame(); }
