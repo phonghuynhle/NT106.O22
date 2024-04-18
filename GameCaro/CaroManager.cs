@@ -40,8 +40,8 @@ namespace GameCaro
         private List<List<Button>> matrix;
         public List<List<Button>> Matrix { get => matrix; set => matrix = value; }
 
-        private event EventHandler playerMarked;
-        public event EventHandler PlayerMarked
+        private event EventHandler<ButtonClickEvent> playerMarked;
+        public event EventHandler<ButtonClickEvent> PlayerMarked
         {
             add
             {
@@ -72,6 +72,14 @@ namespace GameCaro
         private Stack<PlayInfo> playRedo;
         public Stack<PlayInfo> PlayRedo { get => playRedo; set => playRedo = value; }
 
+        
+
+        private int playMode = 0;
+        public int PlayMode { get => playMode; set => playMode = value; }
+
+        private bool IsAI = false;
+
+
 
         #endregion
 
@@ -83,7 +91,7 @@ namespace GameCaro
             this.PlayerMark = mark;
 
             this.CurrentPlayer = 0;
-            //bai3 thêm tên và hình ảnh người chơi
+            // thêm tên và hình ảnh người chơi
             this.Player = new List<Player>()
             {
                 new Player("Player1", Image.FromFile(Application.StartupPath + "\\Resources\\KytuX.jpg")),
@@ -102,7 +110,7 @@ namespace GameCaro
             ChessBoard.Enabled = true;
             ChessBoard.Controls.Clear();
 
-            //bai7 
+            //
             PlayUndo = new Stack<PlayInfo>();
             PlayRedo = new Stack<PlayInfo>();
             //
@@ -136,7 +144,7 @@ namespace GameCaro
                         //
 
                     };
-                    ChessBoard.Controls.Add(btn);
+                    
 
 
                     
@@ -145,6 +153,7 @@ namespace GameCaro
                     //thêm tất cả button vào 
                     Matrix[i].Add(btn);
                     //
+                    ChessBoard.Controls.Add(btn);
 
                     btnold = btn;
                 }
@@ -188,13 +197,18 @@ namespace GameCaro
 
             if (playerMarked != null)
             {
-                playerMarked(this, new EventArgs());
+                playerMarked(this,new ButtonClickEvent(GetChessPoint(btn)));
             }
 
             if (isEndGame(btn))
             {
                 EndGame();
             }
+
+            if (!(IsAI) && playMode == 3)
+                StartAI();
+
+            IsAI = false;
 
 
 
@@ -436,6 +450,410 @@ namespace GameCaro
         }
         #endregion
 
+
+        #region 1 player
+        private long[] ArrAttackScore = new long[7] { 0, 64, 4096, 262144, 16777216, 1073741824, 68719476736 };
+        private long[] ArrDefenseScore = new long[7] { 0, 8, 512, 32768, 2097152, 134217728, 8589934592 };
+
+        #region Calculate attack score
+        private long AttackHorizontal(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt từ trên xuống
+            for (int Count = 1; Count < 6 && CurrRow + Count < Cons.CHESS_BOARD_ROW; Count++)
+            {
+                if (Matrix[CurrRow + Count][CurrCol].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow + Count][CurrCol].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            // Duyệt từ dưới lên
+            for (int Count = 1; Count < 6 && CurrRow - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow - Count][CurrCol].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow - Count][CurrCol].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            if (ManCells == 2)
+                return 0;
+
+            /* Nếu ManCells == 1 => bị chặn 1 đầu => lấy điểm phòng ngự tại vị trí này nhưng 
+            nên cộng thêm 1 để tăng phòng ngự cho máy cảnh giác hơn vì đã bị chặn 1 đầu */
+
+            TotalScore -= ArrDefenseScore[ManCells + 1];
+            TotalScore += ArrAttackScore[ComCells];
+
+            return TotalScore;
+        }
+
+        private long AttackVertical(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt từ trái sang phải
+            for (int Count = 1; Count < 6 && CurrCol + Count < Cons.CHESS_BOARD_COL; Count++)
+            {
+                if (Matrix[CurrRow][CurrCol + Count].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow][CurrCol + Count].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            // Duyệt từ phải sang trái
+            for (int Count = 1; Count < 6 && CurrCol - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow][CurrCol - Count].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow][CurrCol - Count].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            if (ManCells == 2)
+                return 0;
+
+            /* Nếu ManCells == 1 => bị chặn 1 đầu => lấy điểm phòng ngự tại vị trí này nhưng 
+            nên cộng thêm 1 để tăng phòng ngự cho máy cảnh giác hơn vì đã bị chặn 1 đầu */
+
+            TotalScore -= ArrDefenseScore[ManCells + 1];
+            TotalScore += ArrAttackScore[ComCells];
+
+            return TotalScore;
+        }
+
+        private long AttackMainDiag(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt trái trên
+            for (int Count = 1; Count < 6 && CurrCol + Count < Cons.CHESS_BOARD_COL && CurrRow + Count < Cons.CHESS_BOARD_ROW; Count++)
+            {
+                if (Matrix[CurrRow + Count][CurrCol + Count].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow + Count][CurrCol + Count].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            // Duyệt phải dưới
+            for (int Count = 1; Count < 6 && CurrCol - Count >= 0 && CurrRow - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow - Count][CurrCol - Count].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow - Count][CurrCol - Count].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            if (ManCells == 2)
+                return 0;
+
+            /* Nếu ManCells == 1 => bị chặn 1 đầu => lấy điểm phòng ngự tại vị trí này nhưng 
+            nên cộng thêm 1 để tăng phòng ngự cho máy cảnh giác hơn vì đã bị chặn 1 đầu */
+
+            TotalScore -= ArrDefenseScore[ManCells + 1];
+            TotalScore += ArrAttackScore[ComCells];
+
+            return TotalScore;
+        }
+
+        private long AttackExtraDiag(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt phải trên
+            for (int Count = 1; Count < 6 && CurrCol + Count < Cons.CHESS_BOARD_COL && CurrRow - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow - Count][CurrCol + Count].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow - Count][CurrCol + Count].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            // Duyệt trái dưới
+            for (int Count = 1; Count < 6 && CurrCol - Count >= 0 && CurrRow + Count < Cons.CHESS_BOARD_ROW; Count++)
+            {
+                if (Matrix[CurrRow + Count][CurrCol - Count].BackgroundImage == Player[0].Mark)
+                    ComCells += 1;
+                else if (Matrix[CurrRow + Count][CurrCol - Count].BackgroundImage == Player[1].Mark)
+                {
+                    ManCells += 1;
+                    break;
+                }
+                else
+                    break;
+            }
+
+            if (ManCells == 2)
+                return 0;
+
+            /* Nếu ManCells == 1 => bị chặn 1 đầu => lấy điểm phòng ngự tại vị trí này nhưng 
+            nên cộng thêm 1 để tăng phòng ngự cho máy cảnh giác hơn vì đã bị chặn 1 đầu */
+
+            TotalScore -= ArrDefenseScore[ManCells + 1];
+            TotalScore += ArrAttackScore[ComCells];
+
+            return TotalScore;
+        }
+        #endregion
+
+        #region Calculate defense score
+        private long DefenseHorizontal(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt từ trên xuống
+            for (int Count = 1; Count < 6 && CurrRow + Count < Cons.CHESS_BOARD_ROW; Count++)
+            {
+                if (Matrix[CurrRow + Count][CurrCol].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow + Count][CurrCol].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            // Duyệt từ dưới lên
+            for (int Count = 1; Count < 6 && CurrRow - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow - Count][CurrCol].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow - Count][CurrCol].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            if (ComCells == 2)
+                return 0;
+
+            TotalScore += ArrDefenseScore[ManCells];
+
+            return TotalScore;
+        }
+
+        private long DefenseVertical(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt từ trái sang phải
+            for (int Count = 1; Count < 6 && CurrCol + Count < Cons.CHESS_BOARD_COL; Count++)
+            {
+                if (Matrix[CurrRow][CurrCol + Count].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow][CurrCol + Count].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            // Duyệt từ phải sang trái
+            for (int Count = 1; Count < 6 && CurrCol - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow][CurrCol - Count].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow][CurrCol - Count].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            if (ComCells == 2)
+                return 0;
+
+            TotalScore += ArrDefenseScore[ManCells];
+
+            return TotalScore;
+        }
+
+        private long DefenseMainDiag(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt trái trên
+            for (int Count = 1; Count < 6 && CurrCol + Count < Cons.CHESS_BOARD_COL && CurrRow + Count < Cons.CHESS_BOARD_ROW; Count++)
+            {
+                if (Matrix[CurrRow + Count][CurrCol + Count].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow + Count][CurrCol + Count].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            // Duyệt phải dưới
+            for (int Count = 1; Count < 6 && CurrCol - Count >= 0 && CurrRow - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow - Count][CurrCol - Count].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow - Count][CurrCol - Count].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            if (ComCells == 2)
+                return 0;
+
+            TotalScore += ArrDefenseScore[ManCells];
+
+            return TotalScore;
+        }
+
+        private long DefenseExtraDiag(int CurrRow, int CurrCol)
+        {
+            long TotalScore = 0;
+            int ComCells = 0;
+            int ManCells = 0;
+
+            // Duyệt phải trên
+            for (int Count = 1; Count < 6 && CurrCol + Count < Cons.CHESS_BOARD_COL && CurrRow - Count >= 0; Count++)
+            {
+                if (Matrix[CurrRow - Count][CurrCol + Count].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow - Count][CurrCol + Count].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            // Duyệt trái dưới
+            for (int Count = 1; Count < 6 && CurrCol - Count >= 0 && CurrRow + Count < Cons.CHESS_BOARD_ROW; Count++)
+            {
+                if (Matrix[CurrRow + Count][CurrCol - Count].BackgroundImage == Player[0].Mark)
+                {
+                    ComCells += 1;
+                    break;
+                }
+                else if (Matrix[CurrRow + Count][CurrCol - Count].BackgroundImage == Player[1].Mark)
+                    ManCells += 1;
+                else
+                    break;
+            }
+
+            if (ComCells == 2)
+                return 0;
+
+            TotalScore += ArrDefenseScore[ManCells];
+
+            return TotalScore;
+        }
+        #endregion
+
+        private Point FindAiPos()
+        {
+            Point AiPos = new Point();
+            long MaxScore = 0;
+
+            for (int i = 0; i < Cons.CHESS_BOARD_ROW; i++)
+            {
+                for (int j = 0; j < Cons.CHESS_BOARD_COL; j++)
+                {
+                    if (Matrix[i][j].BackgroundImage == null)
+                    {
+                        long AttackScore = AttackHorizontal(i, j) + AttackVertical(i, j) + AttackMainDiag(i, j) + AttackExtraDiag(i, j);
+                        long DefenseScore = DefenseHorizontal(i, j) + DefenseVertical(i, j) + DefenseMainDiag(i, j) + DefenseExtraDiag(i, j);
+                        long TempScore = AttackScore > DefenseScore ? AttackScore : DefenseScore;
+
+                        if (MaxScore < TempScore)
+                        {
+                            MaxScore = TempScore;
+                            AiPos = new Point(i, j);
+                        }
+                    }
+                }
+            }
+
+            return AiPos;
+        }
+
+        public void StartAI()
+        {
+            IsAI = true;
+
+            if (PlayUndo.Count == 0) // mới bắt đầu thì cho máy đánh trước
+                Matrix[Cons.CHESS_BOARD_ROW / 4][Cons.CHESS_BOARD_COL / 4].PerformClick();
+            else
+            {
+                Point AiPos = FindAiPos();
+                Matrix[AiPos.X][AiPos.Y].PerformClick();
+            }
+        }
+
+
+
+        #endregion
 
 
 

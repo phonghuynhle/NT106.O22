@@ -121,7 +121,7 @@ namespace GameCaro
 
         private void btRedo_Click(object sender, EventArgs e)
         {
-            redoToolStripMenuItem_Click(sender, e) ;
+            redoToolStripMenuItem_Click(sender, e);
         }
 
         private void ChessBoard_PlayerMarked(object sender, EventArgs e)
@@ -145,6 +145,16 @@ namespace GameCaro
 
         }
 
-        
+        private void playerToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ChessBoard.PlayMode = 3;
+            NewGame();
+            ChessBoard.StartAI();
+        }
+
+        private void btPlayAI_Click(object sender, EventArgs e)
+        {
+            playerToolStripMenuItem1_Click(sender, e);
+        }
     }
 }

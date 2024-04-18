@@ -88,6 +88,7 @@
             // 
             // ptHinhAnh
             // 
+            ptHinhAnh.Image = (Image)resources.GetObject("ptHinhAnh.Image");
             ptHinhAnh.Location = new Point(-1, -2);
             ptHinhAnh.Name = "ptHinhAnh";
             ptHinhAnh.Size = new Size(424, 215);
@@ -150,6 +151,7 @@
             btPlayAI.TabIndex = 6;
             btPlayAI.Text = "1 Player";
             btPlayAI.UseVisualStyleBackColor = true;
+            btPlayAI.Click += btPlayAI_Click;
             // 
             // button4
             // 
@@ -250,28 +252,28 @@
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(270, 34);
+            newToolStripMenuItem.Size = new Size(200, 34);
             newToolStripMenuItem.Text = "New Game";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // undoToolStripMenuItem
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            undoToolStripMenuItem.Size = new Size(270, 34);
+            undoToolStripMenuItem.Size = new Size(200, 34);
             undoToolStripMenuItem.Text = "Undo";
             undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            redoToolStripMenuItem.Size = new Size(270, 34);
+            redoToolStripMenuItem.Size = new Size(200, 34);
             redoToolStripMenuItem.Text = "Redo";
             redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
             // 
             // quitGameToolStripMenuItem
             // 
             quitGameToolStripMenuItem.Name = "quitGameToolStripMenuItem";
-            quitGameToolStripMenuItem.Size = new Size(270, 34);
+            quitGameToolStripMenuItem.Size = new Size(200, 34);
             quitGameToolStripMenuItem.Text = "Quit Game";
             quitGameToolStripMenuItem.Click += quitGameToolStripMenuItem_Click;
             // 
@@ -306,6 +308,7 @@
             playerToolStripMenuItem1.Name = "playerToolStripMenuItem1";
             playerToolStripMenuItem1.Size = new Size(176, 34);
             playerToolStripMenuItem1.Text = "1 Player";
+            playerToolStripMenuItem1.Click += playerToolStripMenuItem1_Click;
             // 
             // tmTime
             // 
