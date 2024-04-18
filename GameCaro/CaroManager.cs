@@ -86,7 +86,7 @@ namespace GameCaro
 
             };
             //
-            ChangePlayer();
+          
         }
 
         #endregion
@@ -95,7 +95,11 @@ namespace GameCaro
         public void BanCo()
         {
             ChessBoard.Enabled = true;
+            ChessBoard.Controls.Clear();
 
+            CurrentPlayer = 0;
+
+            ChangePlayer();
 
             Matrix = new List<List<Button>>();
 

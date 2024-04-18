@@ -18,23 +18,21 @@ namespace GameCaro
 
             ChessBoard = new CaroManager(pnlBanCo, tbName, ptbIcon);
 
-            
 
-            //bai5 
 
             ChessBoard.EndedGame += ChessBoard_EndedGame;
             ChessBoard.PlayerMarked += ChessBoard_PlayerMarked;
-              
+
             pgbTime.Step = Cons.WAITING_TIME_STEP;
             pgbTime.Maximum = Cons.WAITING_TIME_TIME;
 
             //pgbTime.Value = 0;
 
             tmTime.Interval = Cons.WAITING_TIME_INTERVAL;
-            
+
 
             ChessBoard.BanCo();
-            
+
         }
 
         void EndGame()
@@ -43,6 +41,48 @@ namespace GameCaro
             pnlBanCo.Enabled = false;
 
         }
+        void NewGame()
+        {
+            pgbTime.Value = 0;
+            tmTime.Stop();
+
+            ChessBoard.BanCo();
+
+        }
+        void Quit()
+        {
+            this.Close();
+        }
+        void Undo()
+        {
+        }
+        void Redo() { }
+
+        #region Menu
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewGame();
+            pnlBanCo.Enabled = true;
+        }
+
+        private void quitGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Quit();
+        }
+
+        //bai6 t?o s? ki?n khi form ?óng
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("B?n có ch?c mu?n thoát", "Thông báo", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
+                e.Cancel = true;
+            else
+            {
+
+            }
+
+        }
+        //
+        #endregion
 
         private void ChessBoard_PlayerMarked(object sender, EventArgs e)
         {
@@ -51,7 +91,7 @@ namespace GameCaro
         }
 
         private void ChessBoard_EndedGame(object? sender, EventArgs e)
-        { 
+        {
             EndGame();
 
         }
@@ -61,8 +101,10 @@ namespace GameCaro
             //làm cho pgb ch?y
             pgbTime.PerformStep();
 
-            if(pgbTime.Value>=pgbTime.Maximum) { EndGame(); }
+            if (pgbTime.Value >= pgbTime.Maximum) { EndGame(); }
 
         }
+
+        
     }
 }

@@ -248,26 +248,28 @@
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(200, 34);
+            newToolStripMenuItem.Size = new Size(270, 34);
             newToolStripMenuItem.Text = "New Game";
+            newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // undoToolStripMenuItem
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            undoToolStripMenuItem.Size = new Size(200, 34);
+            undoToolStripMenuItem.Size = new Size(270, 34);
             undoToolStripMenuItem.Text = "Undo";
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            redoToolStripMenuItem.Size = new Size(200, 34);
+            redoToolStripMenuItem.Size = new Size(270, 34);
             redoToolStripMenuItem.Text = "Redo";
             // 
             // quitGameToolStripMenuItem
             // 
             quitGameToolStripMenuItem.Name = "quitGameToolStripMenuItem";
-            quitGameToolStripMenuItem.Size = new Size(200, 34);
+            quitGameToolStripMenuItem.Size = new Size(270, 34);
             quitGameToolStripMenuItem.Text = "Quit Game";
+            quitGameToolStripMenuItem.Click += quitGameToolStripMenuItem_Click;
             // 
             // optionToolStripMenuItem
             // 
