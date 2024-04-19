@@ -161,6 +161,7 @@
             button4.TabIndex = 7;
             button4.Text = "2 Player/ Com";
             button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
             // 
             // btLAN
             // 
@@ -297,18 +298,19 @@
             computerToolStripMenuItem.Name = "computerToolStripMenuItem";
             computerToolStripMenuItem.Size = new Size(270, 34);
             computerToolStripMenuItem.Text = "1 Computer";
+            computerToolStripMenuItem.Click += computerToolStripMenuItem_Click;
             // 
             // lANToolStripMenuItem
             // 
             lANToolStripMenuItem.Name = "lANToolStripMenuItem";
-            lANToolStripMenuItem.Size = new Size(270, 34);
+            lANToolStripMenuItem.Size = new Size(209, 34);
             lANToolStripMenuItem.Text = "LAN";
             lANToolStripMenuItem.Click += lANToolStripMenuItem_Click;
             // 
             // playerToolStripMenuItem1
             // 
             playerToolStripMenuItem1.Name = "playerToolStripMenuItem1";
-            playerToolStripMenuItem1.Size = new Size(270, 34);
+            playerToolStripMenuItem1.Size = new Size(176, 34);
             playerToolStripMenuItem1.Text = "1 Player";
             playerToolStripMenuItem1.Click += playerToolStripMenuItem1_Click;
             // 

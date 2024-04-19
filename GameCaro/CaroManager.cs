@@ -392,6 +392,45 @@ namespace GameCaro
 
             return countTop + countBottom == 5;
         }
+        /*private bool isEndSub(Button btn)
+        {
+            Point point = GetChessPoint(btn);
+
+            int countTop = 0;
+            for (int i = 0; i <= point.X; i++)
+            {
+                if (point.X - i < 0 || point.Y - i < 0)
+                    break;
+
+                if (Matrix[point.Y - i][point.X - i].BackgroundImage == btn.BackgroundImage)
+                {
+                    countTop++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            int countBottom = 0;
+            for (int i = 1; i <= Cons.CHESS_BOARD_COL - point.X; i++)
+            {
+                if (point.X + i >= Cons.CHESS_BOARD_COL || point.Y + i >= Cons.CHESS_BOARD_ROW)
+                    break;
+
+                if (Matrix[point.Y + i][point.X + i].BackgroundImage == btn.BackgroundImage)
+                {
+                    countBottom++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return countTop + countBottom >= 5;
+        }*/
+
 
         #endregion
 

@@ -76,16 +76,8 @@ namespace GameCaro
 
         private bool SendData(Socket target, byte[] data)
         {
-            try
-            {
                 int bytesSent = target.Send(data);
                 return bytesSent == data.Length;
-            }
-            catch (SocketException ex)
-            {
-                Console.WriteLine($"Lỗi khi gửi dữ liệu qua socket: {ex.Message}");
-                return false;
-            }
         }
 
         private bool ReceiveData(Socket target, byte[] data)
@@ -100,38 +92,23 @@ namespace GameCaro
                 Console.WriteLine($"Lỗi khi nhận dữ liệu từ socket: {ex.Message}");
                 return false;
             }
+
         }
 
         public bool Send(object data)
         {
-            try
-            {
                 byte[] serializedData = DataSerializer.SerializeData(data);
                 return SendData(client, serializedData);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Lỗi khi gửi dữ liệu: {ex.Message}");
-                return false;
-            }
         }
 
         public object Receive()
-        {
-            try
-            {
+        {   
                 byte[] receivedData = new byte[BUFFER];
                 bool isReceived = ReceiveData(client, receivedData);
                 if (isReceived)
                     return DataSerializer.DeserializeData(receivedData);
                 else
                     return null;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Lỗi khi nhận dữ liệu: {ex.Message}");
-                return null;
-            }
         }
 
         public IPAddress GetLocalIPv4(NetworkInterfaceType _type)

@@ -20,7 +20,7 @@ namespace GameCaro
         public Form1()
         {
             InitializeComponent();
-            //Control.CheckForIllegalCrossThreadCalls = false;
+            Control.CheckForIllegalCrossThreadCalls = false;
 
             ChessBoard = new CaroManager(pnlBanCo, tbName, ptbIcon);
 
@@ -32,13 +32,12 @@ namespace GameCaro
             pgbTime.Step = Cons.WAITING_TIME_STEP;
             pgbTime.Maximum = Cons.WAITING_TIME_TIME;
 
-            //pgbTime.Value = 0;
 
             tmTime.Interval = Cons.WAITING_TIME_INTERVAL;
 
             socket = new LANManager();
+            tbChat.Text = "";
 
-            //ChessBoard.BanCo();
             NewGame();
 
 
@@ -82,47 +81,135 @@ namespace GameCaro
             ChessBoard.Undo();
             pgbTime.Value = 0;
         }
-        void Redo() { ChessBoard.Redo(); }
+        void Redo()
+        { ChessBoard.Redo(); }
 
         #region Menu
+        //New Game
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             NewGame();
+            if (ChessBoard.PlayMode == 1)
+            {
+                try
+                {
+                    socket.Send(new DataManager((int)SocketCommand.NEW_GAME, "", new Point()));
+                }
+                catch { }
+            }
             pnlBanCo.Enabled = true;
         }
-
-
-
+        //QuitGame
         private void quitGameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Quit();
         }
-
+        //Undo
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             pgbTime.Value = 0;
             ChessBoard.Undo();
-        }
 
+            if (ChessBoard.PlayMode == 1)
+                socket.Send(new DataManager((int)SocketCommand.UNDO, "", new Point()));
+        }
+        //Redo
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ChessBoard.Redo();
-        }
 
-        //Tạo sự kiện khi form đóng
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+            if (ChessBoard.PlayMode == 1)
+                socket.Send(new DataManager((int)SocketCommand.REDO, "", new Point()));
+        }
+        #endregion
+        
+
+        #region Option
+
+        //Chơi kết nối mạng LAN
+        private void lANToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Bạn có chắc muốn thoát", "Thông báo", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
-                e.Cancel = true;
-            else
+            ChessBoard.PlayMode = 1;
+            NewGame();
+            tbChat.Clear();
+            socket.IP = tbIP.Text;
+
+            if (!socket.ConnectServer())
             {
+                socket.IsServer = true;
+                pnlBanCo.Enabled = true;
+                socket.CreateServer();
+
+                Player player = new Player(getName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuX.jpg"));
+                ChessBoard.Player[0] = player;
+                tbName.Text = player.Name;
+
+                MessageBox.Show("Bạn đang là Server", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
+            else
+            {
+                socket.IsServer = false;
+                pnlBanCo.Enabled = false;
+                tbName.Text = "";
+                Listen();
+                //Client bắt đầu lắng nghe từ server 
+                socket.Send(new DataManager((int)SocketCommand.SEND_NAME, getName, new Point()));
+                //Gửi tên đến server
+                Player player = new Player(getName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
+                ChessBoard.Player[1] = player;
 
+                MessageBox.Show("Kết nối thành công !!!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+            }
+            btChat.Enabled = true;
         }
-        //
+
+        //2 người chơi trên cùng 1 máy
+        private void computerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (ChessBoard.PlayMode == 1)
+            {
+                try
+                {
+                    socket.Send(new DataManager((int)SocketCommand.QUIT, "", new Point()));
+                }
+                catch { }
+
+                socket.CloseConnect();
+                MessageBox.Show("Đã ngắt kết nối mạng LAN", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            ChessBoard.PlayMode = 2;
+            NewGame();
+        }
+        // Chơi với máy
+        private void playerToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (ChessBoard.PlayMode == 1)
+            {
+                if (ChessBoard.PlayMode == 1)
+                {
+                    try
+                    {
+                        socket.Send(new DataManager((int)SocketCommand.QUIT, "", new Point()));
+                    }
+                    catch { }
+
+                    socket.CloseConnect();
+                    MessageBox.Show("Đã ngắt kết nối mạng LAN", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            ChessBoard.PlayMode = 3;
+            NewGame();
+            tbChat.Clear();
+            ChessBoard.StartAI();
+        }
         #endregion
 
+
+        #region Button
         private void btUndo_Click(object sender, EventArgs e)
         {
             undoToolStripMenuItem_Click(sender, e);
@@ -133,7 +220,42 @@ namespace GameCaro
             redoToolStripMenuItem_Click(sender, e);
         }
 
-        private void ChessBoard_PlayerMarked(object sender, ButtonClickEvent  e)
+        private void button4_Click(object sender, EventArgs e)
+        {
+            computerToolStripMenuItem_Click(sender, e);
+        }
+
+
+
+        private void btPlayAI_Click(object sender, EventArgs e)
+        {
+            playerToolStripMenuItem1_Click(sender, e);
+        }
+
+        private void btLAN_Click(object sender, EventArgs e)
+        {
+            lANToolStripMenuItem_Click(sender, e);
+        }
+        #endregion
+
+        //Tạo sự kiện khi form đóng
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Bạn có chắc muốn thoát", "Thông báo", MessageBoxButtons.OKCancel) != System.Windows.Forms.DialogResult.OK)
+                e.Cancel = true;
+            else
+            {
+                try
+                {
+                    socket.Send(new DataManager((int)SocketCommand.QUIT, "", new Point()));
+                }
+                catch { }
+
+            }
+
+        }
+
+        private void ChessBoard_PlayerMarked(object sender, ButtonClickEvent e)
         {
             tmTime.Start();
 
@@ -189,78 +311,9 @@ namespace GameCaro
             }
 
         }
+        
 
-        private void playerToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            if (ChessBoard.PlayMode == 1)
-            {
-                if (ChessBoard.PlayMode == 1)
-                {
-                    try
-                    {
-                        socket.Send(new DataManager((int)SocketCommand.QUIT, "", new Point()));
-                    }
-                    catch { }
-
-                    socket.CloseConnect();
-                    MessageBox.Show("Đã ngắt kết nối mạng LAN", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-            }
-            ChessBoard.PlayMode = 3;
-            NewGame();
-            tbChat.Clear();
-            ChessBoard.StartAI();
-        }
-
-        private void btPlayAI_Click(object sender, EventArgs e)
-        {
-            playerToolStripMenuItem1_Click(sender, e);
-        }
-
-        private void btLAN_Click(object sender, EventArgs e)
-        {
-            lANToolStripMenuItem_Click(sender, e);
-        }
-
-        private void lANToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ChessBoard.PlayMode = 1;
-            NewGame();
-            tbChat.Clear();
-            socket.IP = tbIP.Text;
-
-            if (!socket.ConnectServer())
-            {
-                socket.IsServer = true;
-                pnlBanCo.Enabled = true;
-                socket.CreateServer();
-
-                Player player = new Player(GetName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuX.jpg"));
-                ChessBoard.Player[0] = player;
-                tbName.Text = player.Name;
-
-                MessageBox.Show("Bạn đang là Server", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-            }
-            else
-            {
-                socket.IsServer = false;
-                pnlBanCo.Enabled = false;
-                tbName.Text = "";
-                Listen();
-                //Client bắt đầu lắng nghe từ server 
-                socket.Send(new DataManager((int)SocketCommand.SEND_NAME, GetName, new Point()));
-                //Gửi tên đến server
-                Player player = new Player(GetName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
-                ChessBoard.Player[1] = player;
-
-                MessageBox.Show("Kết nối thành công !!!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-
-            }
-            btChat.Enabled = true;
-        }
-
+        //Lấy địa chỉ IP hiển thị lên textbox
         private void Form1_Shown(object sender, EventArgs e)
         {
             tbIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Wireless80211)?.ToString();
@@ -271,6 +324,7 @@ namespace GameCaro
             }
 
         }
+
         void Listen()
         {
             Thread ListenThread = new Thread(() =>
@@ -304,7 +358,7 @@ namespace GameCaro
                 case (int)SocketCommand.SEND_POINT:
                     this.Invoke((MethodInvoker)(() =>
                     {
-                        
+
 
                         pgbTime.Value = 0;
                         pnlBanCo.Enabled = true;
@@ -401,5 +455,7 @@ namespace GameCaro
                 ((TextBox)control).Text += text;
             }
         }
+
+        
     }
 }
