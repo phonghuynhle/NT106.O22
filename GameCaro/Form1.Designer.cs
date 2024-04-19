@@ -170,6 +170,7 @@
             btLAN.TabIndex = 4;
             btLAN.Text = "LAN";
             btLAN.UseVisualStyleBackColor = true;
+            btLAN.Click += btLAN_Click;
             // 
             // btRedo
             // 
@@ -288,25 +289,26 @@
             // 
             playerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { computerToolStripMenuItem, lANToolStripMenuItem });
             playerToolStripMenuItem.Name = "playerToolStripMenuItem";
-            playerToolStripMenuItem.Size = new Size(176, 34);
+            playerToolStripMenuItem.Size = new Size(270, 34);
             playerToolStripMenuItem.Text = "2 Player";
             // 
             // computerToolStripMenuItem
             // 
             computerToolStripMenuItem.Name = "computerToolStripMenuItem";
-            computerToolStripMenuItem.Size = new Size(209, 34);
+            computerToolStripMenuItem.Size = new Size(270, 34);
             computerToolStripMenuItem.Text = "1 Computer";
             // 
             // lANToolStripMenuItem
             // 
             lANToolStripMenuItem.Name = "lANToolStripMenuItem";
-            lANToolStripMenuItem.Size = new Size(209, 34);
+            lANToolStripMenuItem.Size = new Size(270, 34);
             lANToolStripMenuItem.Text = "LAN";
+            lANToolStripMenuItem.Click += lANToolStripMenuItem_Click;
             // 
             // playerToolStripMenuItem1
             // 
             playerToolStripMenuItem1.Name = "playerToolStripMenuItem1";
-            playerToolStripMenuItem1.Size = new Size(176, 34);
+            playerToolStripMenuItem1.Size = new Size(270, 34);
             playerToolStripMenuItem1.Text = "1 Player";
             playerToolStripMenuItem1.Click += playerToolStripMenuItem1_Click;
             // 
@@ -329,6 +331,7 @@
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Game Caro";
+            Shown += Form1_Shown;
             pnlHinhAnh.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptHinhAnh).EndInit();
             pnInfo.ResumeLayout(false);

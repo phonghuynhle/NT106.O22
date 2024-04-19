@@ -209,9 +209,30 @@ namespace GameCaro
                 StartAI();
 
             IsAI = false;
+        }
+        public void OtherPlayerMark(Point point)
+        {
+            Button btn = Matrix[point.Y][point.X];
+
+            if (btn.BackgroundImage != null)
+            {
+                return;
+            }
+            Mark(btn);
 
 
+            PlayUndo.Push(new PlayInfo(GetChessPoint(btn), CurrentPlayer, btn.BackgroundImage));
+            CurrentPlayer = CurrentPlayer == 1 ? 0 : 1;
+            PlayRedo.Clear();
 
+
+            ChangePlayer();
+
+
+            if (isEndGame(btn))
+            {
+                EndGame();
+            }
         }
         //chuyển đổi tên và ký tự 
         private void Mark(Button btn)

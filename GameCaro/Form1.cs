@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace GameCaro
@@ -10,11 +11,16 @@ namespace GameCaro
 
         CaroManager ChessBoard;
         string PlayerName;
+        string getName;
+        LANManager socket;
+
+        public string GetName { get => getName; set => getName = value; }
 
         #endregion
         public Form1()
         {
             InitializeComponent();
+            //Control.CheckForIllegalCrossThreadCalls = false;
 
             ChessBoard = new CaroManager(pnlBanCo, tbName, ptbIcon);
 
@@ -30,8 +36,11 @@ namespace GameCaro
 
             tmTime.Interval = Cons.WAITING_TIME_INTERVAL;
 
+            socket = new LANManager();
 
-            ChessBoard.BanCo();
+            //ChessBoard.BanCo();
+            NewGame();
+
 
         }
 
@@ -124,15 +133,44 @@ namespace GameCaro
             redoToolStripMenuItem_Click(sender, e);
         }
 
-        private void ChessBoard_PlayerMarked(object sender, EventArgs e)
+        private void ChessBoard_PlayerMarked(object sender, ButtonClickEvent  e)
         {
             tmTime.Start();
+
             pgbTime.Value = 0;
+
+            if (ChessBoard.PlayMode == 1)
+            {
+                try
+                {
+                    pnlBanCo.Enabled = false;
+                    socket.Send(new DataManager((int)SocketCommand.SEND_POINT, "", e.ClickedPoint));
+
+                    undoToolStripMenuItem.Enabled = false;
+                    redoToolStripMenuItem.Enabled = false;
+
+                    btUndo.Enabled = false;
+                    btRedo.Enabled = false;
+
+                    Listen();
+                }
+                catch
+                {
+                    EndGame();
+                    MessageBox.Show("Không có kết nối nào", "Lỗi kết nối", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
+            }
         }
 
         private void ChessBoard_EndedGame(object? sender, EventArgs e)
         {
+            int Win_lose = ChessBoard.CurrentPlayer == 1 ? 0 : 1;
+            PlayerName = ChessBoard.Player[Win_lose].Name;
             EndGame();
+
+            if (ChessBoard.PlayMode == 1)
+                socket.Send(new DataManager((int)SocketCommand.END_GAME, "", new Point()));
 
         }
 
@@ -141,20 +179,227 @@ namespace GameCaro
             //làm cho pgb chạy
             pgbTime.PerformStep();
 
-            if (pgbTime.Value >= pgbTime.Maximum) { EndGame(); }
+            if (pgbTime.Value >= pgbTime.Maximum)
+            {
+
+                EndGame();
+                if (ChessBoard.PlayMode == 1)
+                    socket.Send(new DataManager((int)SocketCommand.TIME_OUT, "", new Point()));
+
+            }
 
         }
 
         private void playerToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            if (ChessBoard.PlayMode == 1)
+            {
+                if (ChessBoard.PlayMode == 1)
+                {
+                    try
+                    {
+                        socket.Send(new DataManager((int)SocketCommand.QUIT, "", new Point()));
+                    }
+                    catch { }
+
+                    socket.CloseConnect();
+                    MessageBox.Show("Đã ngắt kết nối mạng LAN", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
             ChessBoard.PlayMode = 3;
             NewGame();
+            tbChat.Clear();
             ChessBoard.StartAI();
         }
 
         private void btPlayAI_Click(object sender, EventArgs e)
         {
             playerToolStripMenuItem1_Click(sender, e);
+        }
+
+        private void btLAN_Click(object sender, EventArgs e)
+        {
+            lANToolStripMenuItem_Click(sender, e);
+        }
+
+        private void lANToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ChessBoard.PlayMode = 1;
+            NewGame();
+            tbChat.Clear();
+            socket.IP = tbIP.Text;
+
+            if (!socket.ConnectServer())
+            {
+                socket.IsServer = true;
+                pnlBanCo.Enabled = true;
+                socket.CreateServer();
+
+                Player player = new Player(GetName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuX.jpg"));
+                ChessBoard.Player[0] = player;
+                tbName.Text = player.Name;
+
+                MessageBox.Show("Bạn đang là Server", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            }
+            else
+            {
+                socket.IsServer = false;
+                pnlBanCo.Enabled = false;
+                tbName.Text = "";
+                Listen();
+                //Client bắt đầu lắng nghe từ server 
+                socket.Send(new DataManager((int)SocketCommand.SEND_NAME, GetName, new Point()));
+                //Gửi tên đến server
+                Player player = new Player(GetName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
+                ChessBoard.Player[1] = player;
+
+                MessageBox.Show("Kết nối thành công !!!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+            }
+            btChat.Enabled = true;
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            tbIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Wireless80211)?.ToString();
+
+            if (string.IsNullOrEmpty(tbIP.Text))
+            {
+                tbIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Ethernet)?.ToString();
+            }
+
+        }
+        void Listen()
+        {
+            Thread ListenThread = new Thread(() =>
+            {
+                try
+                {
+                    DataManager data = (DataManager)socket.Receive();
+                    ProcessData(data);
+                }
+                catch { }
+            });
+
+            ListenThread.IsBackground = true;
+            ListenThread.Start();
+        }
+        private void ProcessData(DataManager data)
+        {
+
+            PlayerName = ChessBoard.Player[ChessBoard.CurrentPlayer == 1 ? 0 : 1].Name;
+            switch (data.Command)
+            {
+                case (int)SocketCommand.NEW_GAME:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        NewGame();
+                        pnlBanCo.Enabled = false;
+                    }
+                    ));
+
+                    break;
+                case (int)SocketCommand.SEND_POINT:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        
+
+                        pgbTime.Value = 0;
+                        pnlBanCo.Enabled = true;
+                        tmTime.Start();
+                        ChessBoard.OtherPlayerMark(data.Point);
+                        undoToolStripMenuItem.Enabled = true;
+                        redoToolStripMenuItem.Enabled = true;
+
+                        btUndo.Enabled = true;
+                        btRedo.Enabled = true;
+                    }
+                    ));
+                    break;
+                case (int)SocketCommand.SEND_MESSAGE:
+                    //tbChat.Text = data.Message;
+                    WriteTextSafe(data.Message, tbChat);
+                    break;
+                case (int)SocketCommand.UNDO:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        pgbTime.Value = 0;
+                        Undo();
+                    }));
+                    break;
+                case (int)SocketCommand.REDO:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        ChessBoard.Redo();
+
+                    }));
+                    break;
+                case (int)SocketCommand.END_GAME:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        EndGame();
+                        MessageBox.Show(PlayerName + " đã chiến thắng", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }));
+                    break;
+                case (int)SocketCommand.TIME_OUT:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        EndGame();
+                        MessageBox.Show("Hết giờ rồi !!!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }));
+                    break;
+                case (int)SocketCommand.QUIT:
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        tmTime.Stop();
+                        EndGame();
+
+                        ChessBoard.PlayMode = 2;
+                        socket.CloseConnect();
+
+                        MessageBox.Show("Người chơi đã thoát", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }));
+                    break;
+                case (int)SocketCommand.SEND_NAME://Khi dữ liệu nhận được có kiểu là SEND_NAME
+                    this.Invoke((MethodInvoker)(() =>
+                    {
+                        if (socket.IsServer)//Kiểm tra xem có phải là server hay không
+                        {//Nếu là server dữ liệu được nhận là từ client sẽ đổi tên người chơi thứ 2 
+                            pnlBanCo.Enabled = true;
+                            Player player = new Player(data.Message, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
+                            ChessBoard.Player[1] = player;//Đổi tên người chơi
+                            socket.Send(new DataManager((int)SocketCommand.SEND_NAME, getName, new Point()));
+                            //Gửi tên đến người chơi khác
+                        }
+                        else
+                        {//ngược lại dữ liệu được nhận là từ server sẽ đổi tên người chơi thứ nhất
+                            Player player = new Player(data.Message, Image.FromFile(Application.StartupPath + "\\Resources\\kytuX.jpg"));
+                            ChessBoard.Player[0] = player;
+                            tbName.Text = player.Name;
+                        }
+                        Listen();//Tiếp tục lắng nghe
+                        btChat.Enabled = true;
+                    }));
+                    break;
+                default:
+                    break;
+            }
+            Listen();
+        }
+        private delegate void SafeCallDelegate(string text, Control obj);
+        private void WriteTextSafe(string text, Control control)
+        {
+            if (control.InvokeRequired)
+            {
+                var d = new SafeCallDelegate(WriteTextSafe);
+                control.Invoke(d, new object[] { text, control });
+            }
+            else
+            {
+                ((TextBox)control).Text += text;
+            }
         }
     }
 }
