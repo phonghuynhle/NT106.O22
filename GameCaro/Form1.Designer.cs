@@ -124,6 +124,7 @@
             btChat.TabIndex = 9;
             btChat.Text = "Send";
             btChat.UseVisualStyleBackColor = true;
+            btChat.Click += btChat_Click;
             // 
             // tbMessage
             // 
@@ -290,13 +291,13 @@
             // 
             playerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { computerToolStripMenuItem, lANToolStripMenuItem });
             playerToolStripMenuItem.Name = "playerToolStripMenuItem";
-            playerToolStripMenuItem.Size = new Size(270, 34);
+            playerToolStripMenuItem.Size = new Size(176, 34);
             playerToolStripMenuItem.Text = "2 Player";
             // 
             // computerToolStripMenuItem
             // 
             computerToolStripMenuItem.Name = "computerToolStripMenuItem";
-            computerToolStripMenuItem.Size = new Size(270, 34);
+            computerToolStripMenuItem.Size = new Size(209, 34);
             computerToolStripMenuItem.Text = "1 Computer";
             computerToolStripMenuItem.Click += computerToolStripMenuItem_Click;
             // 
@@ -333,6 +334,7 @@
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Game Caro";
+            FormClosing += Form1_FormClosing;
             Shown += Form1_Shown;
             pnlHinhAnh.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptHinhAnh).EndInit();

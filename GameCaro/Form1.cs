@@ -122,7 +122,7 @@ namespace GameCaro
                 socket.Send(new DataManager((int)SocketCommand.REDO, "", new Point()));
         }
         #endregion
-        
+
 
         #region Option
 
@@ -238,6 +238,24 @@ namespace GameCaro
         }
         #endregion
 
+
+        //Chat giữa 2 người chơi trên LAN
+        private void btChat_Click(object sender, EventArgs e)
+        {
+            if (ChessBoard.PlayMode != 1)
+                return;
+
+            PlayerName = ChessBoard.Player[socket.IsServer ? 0 : 1].Name;
+            if (tbMessage.Text == "")
+                return;
+            tbChat.Text += "- " + PlayerName + ": " + tbMessage.Text + "\r\n";
+
+            socket.Send(new DataManager((int)SocketCommand.SEND_MESSAGE, "- " + PlayerName + ": " + tbMessage.Text + "\r\n", new Point()));
+            //Sẽ gửi đoạn tin đoán cùng với tên người chơi
+            tbMessage.Text = "";
+            Listen();//Sau đó tiếp tục lắng nghe
+        }
+
         //Tạo sự kiện khi form đóng
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -252,7 +270,6 @@ namespace GameCaro
                 catch { }
 
             }
-
         }
 
         private void ChessBoard_PlayerMarked(object sender, ButtonClickEvent e)
@@ -311,7 +328,7 @@ namespace GameCaro
             }
 
         }
-        
+
 
         //Lấy địa chỉ IP hiển thị lên textbox
         private void Form1_Shown(object sender, EventArgs e)
