@@ -248,6 +248,7 @@ namespace GameCaro
             PlayerName = ChessBoard.Player[socket.IsServer ? 0 : 1].Name;
             if (tbMessage.Text == "")
                 return;
+
             tbChat.Text += "- " + PlayerName + ": " + tbMessage.Text + "\r\n";
 
             socket.Send(new DataManager((int)SocketCommand.SEND_MESSAGE, "- " + PlayerName + ": " + tbMessage.Text + "\r\n", new Point()));
@@ -270,6 +271,7 @@ namespace GameCaro
                 catch { }
 
             }
+
         }
 
         private void ChessBoard_PlayerMarked(object sender, ButtonClickEvent e)
@@ -360,6 +362,7 @@ namespace GameCaro
         private void ProcessData(DataManager data)
         {
 
+
             PlayerName = ChessBoard.Player[ChessBoard.CurrentPlayer == 1 ? 0 : 1].Name;
             switch (data.Command)
             {
@@ -433,24 +436,24 @@ namespace GameCaro
                         MessageBox.Show("Người chơi đã thoát", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }));
                     break;
-                case (int)SocketCommand.SEND_NAME://Khi dữ liệu nhận được có kiểu là SEND_NAME
+                case (int)SocketCommand.SEND_NAME:
                     this.Invoke((MethodInvoker)(() =>
                     {
-                        if (socket.IsServer)//Kiểm tra xem có phải là server hay không
-                        {//Nếu là server dữ liệu được nhận là từ client sẽ đổi tên người chơi thứ 2 
+                        if (socket.IsServer)
+                        {
                             pnlBanCo.Enabled = true;
                             Player player = new Player(data.Message, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
-                            ChessBoard.Player[1] = player;//Đổi tên người chơi
+                            ChessBoard.Player[1] = player;
                             socket.Send(new DataManager((int)SocketCommand.SEND_NAME, getName, new Point()));
-                            //Gửi tên đến người chơi khác
+                           
                         }
                         else
-                        {//ngược lại dữ liệu được nhận là từ server sẽ đổi tên người chơi thứ nhất
+                        {
                             Player player = new Player(data.Message, Image.FromFile(Application.StartupPath + "\\Resources\\kytuX.jpg"));
                             ChessBoard.Player[0] = player;
                             tbName.Text = player.Name;
                         }
-                        Listen();//Tiếp tục lắng nghe
+                        Listen();
                         btChat.Enabled = true;
                     }));
                     break;
@@ -473,6 +476,5 @@ namespace GameCaro
             }
         }
 
-        
     }
 }
