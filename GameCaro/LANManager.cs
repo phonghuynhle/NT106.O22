@@ -21,8 +21,7 @@ namespace GameCaro
         public bool ConnectServer()
         {
             try
-            {
-                // Khởi tạo một biến client mới
+            { 
                 client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
                 // Kết nối tới máy chủ
@@ -41,13 +40,11 @@ namespace GameCaro
         {
             try
             {
-                // Khởi tạo một biến server mới
                 server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
                 // Gắn IPEndPoint với Socket
                 server.Bind(new IPEndPoint(IPAddress.Parse(IP), PORT));
 
-                // Lắng nghe kết nối từ client (tối đa 10 kết nối đồng thời)
                 server.Listen(10);
 
                 // Tạo một Thread để chấp nhận kết nối từ client
@@ -55,12 +52,10 @@ namespace GameCaro
                 {
                     try
                     {
-                        // Chấp nhận kết nối từ client và gán vào biến client
                         client = server.Accept();
                     }
                     catch (SocketException ex)
                     {
-                        // Xử lý ngoại lệ nếu có
                         Console.WriteLine($"Lỗi Socket khi chấp nhận kết nối từ client: {ex.Message}");
                     }
                 });

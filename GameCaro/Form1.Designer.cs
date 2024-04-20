@@ -334,6 +334,7 @@
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Game Caro";
+            FormClosing += Form1_FormClosing;
             Shown += Form1_Shown;
             pnlHinhAnh.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ptHinhAnh).EndInit();

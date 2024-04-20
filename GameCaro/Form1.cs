@@ -139,11 +139,9 @@ namespace GameCaro
                 socket.IsServer = true;
                 pnlBanCo.Enabled = true;
                 socket.CreateServer();
-
                 Player player = new Player(getName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuX.jpg"));
                 ChessBoard.Player[0] = player;
                 tbName.Text = player.Name;
-
                 MessageBox.Show("Bạn đang là Server", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             }
@@ -158,9 +156,7 @@ namespace GameCaro
                 //Gửi tên đến server
                 Player player = new Player(getName, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
                 ChessBoard.Player[1] = player;
-
                 MessageBox.Show("Kết nối thành công !!!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
 
             }
             btChat.Enabled = true;
@@ -271,7 +267,6 @@ namespace GameCaro
                 catch { }
 
             }
-
         }
 
         private void ChessBoard_PlayerMarked(object sender, ButtonClickEvent e)
@@ -341,7 +336,6 @@ namespace GameCaro
             {
                 tbIP.Text = socket.GetLocalIPv4(NetworkInterfaceType.Ethernet)?.ToString();
             }
-
         }
 
         void Listen()
@@ -445,7 +439,7 @@ namespace GameCaro
                             Player player = new Player(data.Message, Image.FromFile(Application.StartupPath + "\\Resources\\kytuO.jpg"));
                             ChessBoard.Player[1] = player;
                             socket.Send(new DataManager((int)SocketCommand.SEND_NAME, getName, new Point()));
-                           
+
                         }
                         else
                         {
@@ -476,5 +470,6 @@ namespace GameCaro
             }
         }
 
+       
     }
 }
