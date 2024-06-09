@@ -39,7 +39,7 @@ namespace GameCaro
         END_GAME,
         TIME_OUT,
         QUIT,
-        SEND_NAME
+        SEND_NAME,
     }
 }
 

@@ -33,22 +33,23 @@
             btPlay = new Button();
             btXoa = new Button();
             label1 = new Label();
+            tbRoom = new TextBox();
+            label2 = new Label();
             SuspendLayout();
             // 
             // tbName
             // 
             tbName.Anchor = AnchorStyles.None;
-            tbName.Location = new Point(71, 103);
+            tbName.Location = new Point(121, 64);
             tbName.Name = "tbName";
-            tbName.Size = new Size(409, 31);
+            tbName.Size = new Size(305, 31);
             tbName.TabIndex = 0;
-
             // 
             // btPlay
             // 
             btPlay.Anchor = AnchorStyles.None;
             btPlay.Font = new Font("Times New Roman", 10F, FontStyle.Bold);
-            btPlay.Location = new Point(368, 151);
+            btPlay.Location = new Point(314, 194);
             btPlay.Name = "btPlay";
             btPlay.Size = new Size(112, 34);
             btPlay.TabIndex = 1;
@@ -60,11 +61,11 @@
             // 
             btXoa.Anchor = AnchorStyles.None;
             btXoa.Font = new Font("Times New Roman", 10F, FontStyle.Bold);
-            btXoa.Location = new Point(227, 151);
+            btXoa.Location = new Point(180, 194);
             btXoa.Name = "btXoa";
             btXoa.Size = new Size(112, 34);
             btXoa.TabIndex = 2;
-            btXoa.Text = "Xóa";
+            btXoa.Text = "Cancel";
             btXoa.UseVisualStyleBackColor = true;
             btXoa.Click += btXoa_Click;
             // 
@@ -73,12 +74,32 @@
             label1.Anchor = AnchorStyles.None;
             label1.AutoSize = true;
             label1.Font = new Font("Times New Roman", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(144, 49);
+            label1.Location = new Point(16, 61);
             label1.Name = "label1";
-            label1.Size = new Size(258, 32);
+            label1.Size = new Size(82, 32);
             label1.TabIndex = 3;
-            label1.Text = "Nhập tên để bắt đầu";
+            label1.Text = "Name";
             label1.Click += label1_Click;
+            // 
+            // tbRoom
+            // 
+            tbRoom.Anchor = AnchorStyles.None;
+            tbRoom.Location = new Point(121, 130);
+            tbRoom.Name = "tbRoom";
+            tbRoom.Size = new Size(305, 31);
+            tbRoom.TabIndex = 0;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.None;
+            label2.AutoSize = true;
+            label2.Font = new Font("Times New Roman", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label2.Location = new Point(14, 130);
+            label2.Name = "label2";
+            label2.Size = new Size(84, 32);
+            label2.TabIndex = 3;
+            label2.Text = "Room";
+            label2.Click += label1_Click;
             // 
             // EnterName
             // 
@@ -86,10 +107,12 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
-            ClientSize = new Size(570, 241);
+            ClientSize = new Size(491, 282);
+            Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(btXoa);
             Controls.Add(btPlay);
+            Controls.Add(tbRoom);
             Controls.Add(tbName);
             DoubleBuffered = true;
             Name = "EnterName";
@@ -104,5 +127,7 @@
         private Button btPlay;
         private Button btXoa;
         private Label label1;
+        private TextBox tbRoom;
+        private Label label2;
     }
 }

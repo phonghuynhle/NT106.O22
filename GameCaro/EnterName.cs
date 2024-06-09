@@ -18,6 +18,7 @@ namespace GameCaro
             this.StartPosition = FormStartPosition.CenterScreen;
         }
 
+
         private void btPlay_Click(object sender, EventArgs e)
         {
             try
@@ -27,8 +28,15 @@ namespace GameCaro
                     MessageBox.Show("Bạn chưa nhập tên", "Thông báo");
                     return;
                 }
+                if (tbRoom.Text=="")
+                {
+                    MessageBox.Show("Bạn chưa nhập số phòng", "Thông báo");
+                    return;
+                }
 
                 Form1 gameCaro = new Form1();
+                gameCaro.GameMode = 0;
+                gameCaro.Room = int.Parse(tbRoom.Text);
                 gameCaro.GetName = tbName.Text;
                 gameCaro.Show();
             }

@@ -25,5 +25,6 @@ namespace GameCaro
             this.Mark = mark;
 
         }
+        public Player(string name) { this.Name = name; }
     }
 }

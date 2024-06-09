@@ -34,9 +34,9 @@
             pnlHinhAnh = new Panel();
             ptHinhAnh = new PictureBox();
             pnInfo = new Panel();
+            tbChat = new TextBox();
             btChat = new Button();
             tbMessage = new TextBox();
-            tbChat = new TextBox();
             btPlayAI = new Button();
             button4 = new Button();
             btLAN = new Button();
@@ -59,6 +59,8 @@
             lANToolStripMenuItem = new ToolStripMenuItem();
             playerToolStripMenuItem1 = new ToolStripMenuItem();
             tmTime = new System.Windows.Forms.Timer(components);
+            lblPort = new Label();
+            tbRoom = new TextBox();
             pnlHinhAnh.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ptHinhAnh).BeginInit();
             pnInfo.SuspendLayout();
@@ -100,9 +102,9 @@
             // 
             pnInfo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             pnInfo.BorderStyle = BorderStyle.Fixed3D;
+            pnInfo.Controls.Add(tbChat);
             pnInfo.Controls.Add(btChat);
             pnInfo.Controls.Add(tbMessage);
-            pnInfo.Controls.Add(tbChat);
             pnInfo.Controls.Add(btPlayAI);
             pnInfo.Controls.Add(button4);
             pnInfo.Controls.Add(btLAN);
@@ -115,6 +117,15 @@
             pnInfo.Name = "pnInfo";
             pnInfo.Size = new Size(425, 650);
             pnInfo.TabIndex = 2;
+            // 
+            // tbChat
+            // 
+            tbChat.Location = new Point(4, 275);
+            tbChat.Multiline = true;
+            tbChat.Name = "tbChat";
+            tbChat.ReadOnly = true;
+            tbChat.Size = new Size(414, 316);
+            tbChat.TabIndex = 0;
             // 
             // btChat
             // 
@@ -133,16 +144,6 @@
             tbMessage.Name = "tbMessage";
             tbMessage.Size = new Size(315, 46);
             tbMessage.TabIndex = 8;
-            // 
-            // tbChat
-            // 
-            tbChat.BackColor = SystemColors.Control;
-            tbChat.Location = new Point(3, 264);
-            tbChat.Multiline = true;
-            tbChat.Name = "tbChat";
-            tbChat.ScrollBars = ScrollBars.Vertical;
-            tbChat.Size = new Size(415, 312);
-            tbChat.TabIndex = 7;
             // 
             // btPlayAI
             // 
@@ -214,6 +215,7 @@
             // 
             tbName.Location = new Point(22, 25);
             tbName.Name = "tbName";
+            tbName.ReadOnly = true;
             tbName.Size = new Size(247, 31);
             tbName.TabIndex = 0;
             // 
@@ -222,6 +224,7 @@
             tbIP.Location = new Point(63, 36);
             tbIP.Multiline = true;
             tbIP.Name = "tbIP";
+            tbIP.ReadOnly = true;
             tbIP.Size = new Size(369, 33);
             tbIP.TabIndex = 3;
             // 
@@ -319,11 +322,30 @@
             // 
             tmTime.Tick += tmTime_Tick;
             // 
+            // lblPort
+            // 
+            lblPort.AutoSize = true;
+            lblPort.Location = new Point(463, 41);
+            lblPort.Name = "lblPort";
+            lblPort.Size = new Size(60, 25);
+            lblPort.TabIndex = 14;
+            lblPort.Text = "Room";
+            // 
+            // tbRoom
+            // 
+            tbRoom.Location = new Point(534, 38);
+            tbRoom.Name = "tbRoom";
+            tbRoom.ReadOnly = true;
+            tbRoom.Size = new Size(150, 31);
+            tbRoom.TabIndex = 15;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1112, 976);
+            Controls.Add(tbRoom);
+            Controls.Add(lblPort);
             Controls.Add(label1);
             Controls.Add(tbIP);
             Controls.Add(pnInfo);
@@ -355,7 +377,6 @@
         private Panel pnInfo;
         private Button btChat;
         private TextBox tbMessage;
-        private TextBox tbChat;
         private Button btPlayAI;
         private Button button4;
         private Button btLAN;
@@ -378,5 +399,8 @@
         private ToolStripMenuItem lANToolStripMenuItem;
         private ToolStripMenuItem playerToolStripMenuItem1;
         private System.Windows.Forms.Timer tmTime;
+        private TextBox tbChat;
+        private Label lblPort;
+        private TextBox tbRoom;
     }
 }

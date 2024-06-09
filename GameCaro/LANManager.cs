@@ -7,31 +7,29 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 
 namespace GameCaro
 {
     public class LANManager
     {
-        public string IP = "127.0.0.1";
+        public string IP = IPAddress.Loopback.ToString();
         public int PORT = 9999;
         public bool IsServer = true;
         public const int BUFFER = 1024;
-        Socket client;
-        Socket server;
+        TcpClient client;
+        TcpListener server;
         public bool ConnectServer()
         {
             try
-            { 
-                client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-                // Kết nối tới máy chủ
-                client.Connect(new IPEndPoint(IPAddress.Parse(IP), PORT));
-
+            {
+                client = new TcpClient();
+                client.Connect(IPAddress.Parse(IP), PORT);
                 return true;
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi Socket: {ex.Message}");
+                Console.WriteLine($" error: {ex.Message}");
                 return false;
             }
         }
@@ -40,117 +38,123 @@ namespace GameCaro
         {
             try
             {
-                server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                server = new TcpListener(IPAddress.Parse(IP), PORT);
+                server.Start();
+                Console.WriteLine("Server started...");
 
-                // Gắn IPEndPoint với Socket
-                server.Bind(new IPEndPoint(IPAddress.Parse(IP), PORT));
-
-                server.Listen(10);
-
-                // Tạo một Thread để chấp nhận kết nối từ client
+                // Accept client connection in a separate thread
                 Thread acceptClientThread = new Thread(() =>
                 {
                     try
                     {
-                        client = server.Accept();
+                        client = server.AcceptTcpClient();
+                        Console.WriteLine("Client connected...");
                     }
-                    catch (SocketException ex)
+                    catch (Exception ex)
                     {
-                        Console.WriteLine($"Lỗi Socket khi chấp nhận kết nối từ client: {ex.Message}");
+                        Console.WriteLine($" error when accepting client: {ex.Message}");
                     }
                 });
 
                 acceptClientThread.IsBackground = true;
-                acceptClientThread.Start(); // Bắt đầu Thread để chấp nhận kết nối từ client
+                acceptClientThread.Start();
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi Socket khi tạo server: {ex.Message}");
+                Console.WriteLine($" error when creating server: {ex.Message}");
             }
         }
 
-        private bool SendData(Socket target, byte[] data)
-        {
-                int bytesSent = target.Send(data);
-                return bytesSent == data.Length;
-        }
 
-        private bool ReceiveData(Socket target, byte[] data)
+        private bool SendData(NetworkStream stream, byte[] data)
         {
             try
             {
-                int bytesReceived = target.Receive(data);
-                return bytesReceived > 0;
+                stream.Write(data, 0, data.Length);
+                return true;
             }
-            catch (SocketException ex)
+            catch (IOException ex)
             {
-                Console.WriteLine($"Lỗi khi nhận dữ liệu từ socket: {ex.Message}");
+                Console.WriteLine($"Error when sending data: {ex.Message}");
                 return false;
             }
 
         }
 
+        private bool ReceiveData(NetworkStream stream, byte[] data)
+        {
+            try
+            {
+                int bytesRead = stream.Read(data, 0, data.Length);
+                return bytesRead > 0;
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"Error when receiving data: {ex.Message}");
+                return false;
+            }
+        }
+
         public bool Send(object data)
         {
-                byte[] serializedData = DataSerializer.SerializeData(data);
-                return SendData(client, serializedData);
+            if (client == null)
+            {
+                Console.WriteLine("Client not connected.");
+                return false;
+            }
+
+            NetworkStream stream = client.GetStream();
+            byte[] serializedData = DataSerializer.SerializeData(data);
+            return SendData(stream, serializedData);
         }
 
         public object Receive()
-        {   
-                byte[] receivedData = new byte[BUFFER];
-                bool isReceived = ReceiveData(client, receivedData);
-                if (isReceived)
-                    return DataSerializer.DeserializeData(receivedData);
-                else
-                    return null;
-        }
-
-        public IPAddress GetLocalIPv4(NetworkInterfaceType _type)
         {
-            // Lấy tất cả các giao diện mạng
-            NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-            // Lọc và trả về địa chỉ IP của giao diện mạng thỏa mãn điều kiện
-            foreach (NetworkInterface networkInterface in networkInterfaces)
+            if (client == null)
             {
-                // Kiểm tra loại và trạng thái của giao diện mạng
-                if (networkInterface.NetworkInterfaceType == _type && networkInterface.OperationalStatus == OperationalStatus.Up)
-                {
-                    // Lấy các địa chỉ IP của giao diện mạng
-                    IPInterfaceProperties ipProperties = networkInterface.GetIPProperties();
-                    UnicastIPAddressInformationCollection ipAddresses = ipProperties.UnicastAddresses;
-
-                    // Lặp qua các địa chỉ IP và trả về địa chỉ IPv4 đầu tiên
-                    foreach (UnicastIPAddressInformation ipAddress in ipAddresses)
-                    {
-                        if (ipAddress.Address.AddressFamily == AddressFamily.InterNetwork)
-                        {
-                            return ipAddress.Address;
-                        }
-                    }
-                }
+                Console.WriteLine("Client not connected.");
+                return null;
             }
 
-            // Trả về null nếu không tìm thấy địa chỉ IP phù hợp
+            NetworkStream stream = client.GetStream();
+            byte[] receivedData = new byte[BUFFER];
+            bool isReceived = ReceiveData(stream, receivedData);
+            if (isReceived)
+                return DataSerializer.DeserializeData(receivedData);
+            else
+                return null;
+        }
+
+
+
+
+        public IPAddress GetLocalIPv4()
+        {
+            IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
+            foreach (IPAddress ipAddress in localIPs)
+            {
+                if (ipAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    return ipAddress;
+                }
+            }
             return null;
         }
         public void CloseConnect()
         {
             try
             {
-                server.Close();
-                client.Close();
+                server?.Stop();
+                client?.Close();
             }
             catch { }
-
         }
 
     }
+
     public class DataSerializer
     {
 #pragma warning disable SYSLIB0011
-        // Nén đối tượng thành mảng byte
         public static byte[] SerializeData(object obj)
         {
             try
@@ -161,21 +165,20 @@ namespace GameCaro
                     binaryFormatter.Serialize(memoryStream, obj);
                     return memoryStream.ToArray();
                 }
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi khi nén đối tượng: {ex.Message}");
+                Console.WriteLine($"Error serializing object: {ex.Message}");
                 return null;
             }
         }
 
-
-        // Giải nén mảng byte thành đối tượng
         public static object DeserializeData(byte[] byteArray)
         {
             if (byteArray == null || byteArray.Length == 0)
             {
-                Console.WriteLine("Mảng byte truyền vào không hợp lệ.");
+                Console.WriteLine("Invalid byte array.");
                 return null;
             }
 
@@ -189,11 +192,17 @@ namespace GameCaro
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Lỗi khi giải nén mảng byte: {ex.Message}");
+                Console.WriteLine($"Error deserializing byte array: {ex.Message}");
                 return null;
             }
         }
-
+        
 #pragma warning restore SYSLIB0011
     }
 }
+
+
+
+
+
+
